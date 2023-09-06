@@ -20,7 +20,7 @@ authRouter.post('/login', async(req: RequestWithBody<LoginInputType>, res: Respo
     }
 })
 
-authRouter.get('/me', authMiddleware, async(req: RequestWithUser<UserViewModel>, res: Response) => {    // RequestWithParams
+authRouter.get('/me', authMiddleware, async(req: RequestWithUser<UserViewModel>, res: Response) => {    
     if(!req.user){
         return res.sendStatus(sendStatus.UNAUTHORIZED_401)
     } else {
