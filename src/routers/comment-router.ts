@@ -9,7 +9,7 @@ import { createPostValidationForComment } from "../middlewares/validations/comme
 export const commentsRouter = Router({})
 
 
-commentsRouter.get('/:commentId', async (req: Request, res: Response) => {/**/ 
+commentsRouter.get('/:commentId', async (req: Request, res: Response) => {
     const foundComment = await commentsQueryRepository.findCommentById(req.params.commentId)    
       if (foundComment) {
         return res.status(sendStatus.OK_200).send(foundComment) 

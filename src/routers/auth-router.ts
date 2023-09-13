@@ -31,7 +31,7 @@ authRouter.get('/me', authMiddleware, async(req: RequestWithUser<UserViewModel>,
     if(!req.user){
         return res.sendStatus(sendStatus.UNAUTHORIZED_401)
     } else {
-        return res.status(sendStatus.OK_200)
+        return res.sendStatus(sendStatus.OK_200)
             .send({
             email: req.user.email,
             login: req.user.login,
@@ -45,7 +45,7 @@ authRouter.post('/registration-confirmation', validateCode, async(req: RequestWi
     if(result) {
         return res.sendStatus(sendStatus.NO_CONTENT_204)
     } else {
-        return res.status(sendStatus.BAD_REQUEST_400)
+        return res.sendStatus(sendStatus.BAD_REQUEST_400)
     }
 })
 
@@ -55,7 +55,7 @@ authRouter.post('/registration', createUserValidation, async(req: RequestWithBod
     if (user) {
         return res.sendStatus(sendStatus.NO_CONTENT_204)
     } else {
-        return res.status(sendStatus.BAD_REQUEST_400)
+        return res.sendStatus(sendStatus.BAD_REQUEST_400)
     }
 })
 //todo
@@ -64,6 +64,6 @@ authRouter.post('/registration-email-resending', async(req: RequestWithBody<User
     if (user) {
         return res.sendStatus(sendStatus.NO_CONTENT_204)
     } else {
-        return res.status(sendStatus.BAD_REQUEST_400)
+        return res.sendStatus(sendStatus.BAD_REQUEST_400)
     }
 })
