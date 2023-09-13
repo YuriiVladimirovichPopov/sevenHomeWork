@@ -56,5 +56,10 @@ authRouter.post('/registration', async(req: RequestWithBody<UserInputModel>, res
 })
 //todo
 authRouter.post('/registration-email-resending', async(req: RequestWithBody<UserInputModel>, res: Response) => {
-
+    const user = await usersRepository.updateConfirmEmailByUser(req.body.email)
+    if (user) {
+        return res.status(sendStatus.NO_CONTENT_204).send(user)
+    } else {
+        return res.status(sendStatus.BAD_REQUEST_400)
+    }
 })
