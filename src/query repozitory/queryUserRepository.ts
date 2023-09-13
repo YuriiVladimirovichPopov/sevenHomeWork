@@ -20,14 +20,10 @@ export const QueryUserRepository = {
         return await usersRepository.findAllUsers(pagination)
     },
 
-    
-
     async findUserById (id: ObjectId): Promise<UserViewModel | null> {
         return usersRepository.findUserById(id)
 
     },
-
-    
 
     async deleteUserById(id: string): Promise<boolean> {
         return await usersRepository.deleteUser(id)

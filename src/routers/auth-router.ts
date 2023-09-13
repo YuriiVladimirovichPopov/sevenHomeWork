@@ -42,6 +42,7 @@ authRouter.get('/me', authMiddleware, async(req: RequestWithUser<UserViewModel>,
 })
 //todo
 authRouter.post('/registration-confirmation', validateCode, async(req: RequestWithBody<CodeType>, res: Response) => {
+    //-> authService -> findUserByCode -> check is user confirmed (should be false) -> updateConfirmEmailByUser (make true)
     const result = await authService.confirmEmail(req.body.code)
     if(result) {
         return res.sendStatus(sendStatus.NO_CONTENT_204)
@@ -61,6 +62,7 @@ authRouter.post('/registration', createUserValidation, async(req: RequestWithBod
 })
 //todo
 authRouter.post('/registration-email-resending', emailConfValidation, async(req: RequestWithBody<UserInputModel>, res: Response) => {
+    //->authService -> findUserByEmail -> create newConfirmationCode and newDate -> save newConfirmationCode and newDate -> sendEmail(user.email, newConfirmationCode)
     const user = await authService.updateConfirmEmailByUser(req.body.email)
     if (user) {
         return res.sendStatus(sendStatus.NO_CONTENT_204)

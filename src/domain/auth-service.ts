@@ -1,7 +1,5 @@
-import { PaginatedType } from "../routers/helpers/pagination";
 import { UserViewModel } from "../models/users/userViewModel";
 import { usersRepository } from "../repositories/users-repository";
-import { PaginatedUser } from "../models/users/paginatedQueryUser";
 import  bcrypt  from "bcrypt";
 import { ObjectId } from "mongodb";
 import {UsersMongoDbType } from "../types";
@@ -15,6 +13,7 @@ import { usersCollection } from "../db/db";
 
 
 export const authService = {
+    
     async createUser (login: string, email: string, password: string): Promise<UserViewModel | null> {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
@@ -60,7 +59,7 @@ export const authService = {
     },
 
     async confirmEmail(code: string): Promise<UserViewModel | boolean> {
-        let user = await usersRepository.findByLoginOrEmail(code)
+        let user = await usersRepository.findUserByConfirmationCode(code)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
@@ -85,12 +84,8 @@ export const authService = {
         return hash
     },
 
-    async updateConfirmEmailByUser(id: string): Promise<boolean> {
-        if(!ObjectId.isValid(id)) {
-            return false
-        }
-        const _id = new ObjectId(id)
-        const foundUserById = await usersCollection.updateOne({_id}, {$set: {isConfirmEmail: true}})
-        return foundUserById.matchedCount === 1
+    async updateConfirmEmailByUser(email: string): Promise<boolean> {
+        const foundUserByEmail = await usersCollection.updateOne({email}, {$set: {isConfirmEmail: true}})
+        return foundUserByEmail.matchedCount === 1
     },
 }

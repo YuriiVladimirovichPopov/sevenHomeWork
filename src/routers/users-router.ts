@@ -38,8 +38,7 @@ usersRouter.post('/',
   
 usersRouter.delete('/:id', 
   authorizationValidation,
-async (req: RequestWithParams<getByIdParam>, res: Response) => {
-  //find user by id
+  async (req: RequestWithParams<getByIdParam>, res: Response) => {
   const foundUser = await QueryUserRepository.deleteUserById(req.params.id);
   if (!foundUser) {
     return res.sendStatus(sendStatus.NOT_FOUND_404)

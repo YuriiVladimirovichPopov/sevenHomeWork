@@ -1,9 +1,8 @@
 import { ObjectId} from "mongodb";
 import { usersCollection } from "../db/db";
 import { UsersMongoDbType } from '../types';
-import { PaginatedType, UserPagination } from "../routers/helpers/pagination";
+import { UserPagination } from "../routers/helpers/pagination";
 import { UserViewModel } from "../models/users/userViewModel";
-import { UserInputModel } from "../models/users/userInputModel";
 import { PaginatedUser } from "../models/users/paginatedQueryUser";
 
 
@@ -70,8 +69,8 @@ export const usersRepository = {
         return user
     },
 
-    async findUserByConfirmationCode(emailConfirmationCode: string) {
-        const user = await usersCollection.findOne({emailConfirmationCode: emailConfirmationCode})
+    async findUserByConfirmationCode(code: string) {
+        const user = await usersCollection.findOne({"emailConfirmation.confirmationCode" : code })
         return user
     },
     
@@ -80,8 +79,6 @@ export const usersRepository = {
         return this._userMapper(newUser)
     },
 
-    
-     
     async deleteUser(id: string): Promise<boolean> {
         if (!ObjectId.isValid(id)) {
             return false

@@ -3,9 +3,6 @@ import { inputValidationErrors } from "../input-validation-middleware"
 import { blogsRepository } from "../../repositories/blogs-repository"
 
 
-
-
-
 const titleValidation = body('title')
                                     .isString()
                                     .withMessage('Must be string')
