@@ -1,13 +1,20 @@
 import { body } from "express-validator";
 import { inputValidationErrors } from "../input-validation-middleware";
+import { usersRepository } from "../../repositories/users-repository";
 
 
 const loginValidation = body('login')
                                             .isString()
                                             .isLength({min: 3, max: 10})
                                             .trim()
-                                            //.matches(/^[a-zA-Z0-9_-]*$/)
                                             .withMessage('incorrect login')
+                                            .custom(async (login) => {
+                                                const user = await usersRepository.findByLoginOrEmail(login);
+                                                if (user) {
+                                                    throw Error('User already exists');
+                                                }
+                                                return true;
+                                                })
 
 const passwordValidation = body('password')
                                             .isString()
@@ -21,6 +28,13 @@ const emailValidation = body('email')
                                             .isEmail()
                                             .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
                                             .withMessage('incorrect email')
+                                            .custom(async (email) => {
+                                                const user = await usersRepository.findByLoginOrEmail(email);
+                                                if (user) {
+                                                    throw Error('User already exists');
+                                                }
+                                                return true;
+                                                })
 
 const loginOrEmailValidation = body('loginOrEmail').isString().trim().isLength({min: 3, max: 30})       //todo
 
