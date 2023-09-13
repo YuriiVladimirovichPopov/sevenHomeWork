@@ -50,9 +50,9 @@ authRouter.post('/registration-confirmation', async(req: RequestWithBody<CodeTyp
 
 authRouter.post('/registration', createUserValidation, async(req: RequestWithBody<UserInputModel>, res: Response) => {
     const user = await authService.createUser(req.body.login, req.body.email, req.body.password)
-    console.log(user)
+    
     if (user) {
-        return res.status(sendStatus.NO_CONTENT_204).send(user)
+        return res.sendStatus(sendStatus.NO_CONTENT_204)
     } else {
         return res.status(sendStatus.BAD_REQUEST_400)
     }

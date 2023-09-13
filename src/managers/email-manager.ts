@@ -3,6 +3,7 @@ import { EmailConfirmationType } from '../models/users/userViewModel';
 
 export const emailManager = {
     async sendEmail(newUser: any) {
-        await emailAdapter.sendEmail(newUser.email, 'code', newUser.EmailConfirmation.confirmationCode )
+        
+       return emailAdapter.sendEmail(newUser.email, 'code', newUser.emailConfirmation.confirmationCode )
     }
 }
