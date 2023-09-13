@@ -38,7 +38,8 @@ export const authService = {
         const createResult = usersRepository.createUser(newUser)
        
         try {
-         emailManager.sendEmail(newUser)
+         const res = await emailManager.sendEmail(newUser)
+         console.log('sendEmail:', res)
         } catch {
             console.error('send email error:', error)
             //await usersRepository.deleteUser(newUser._id.toString())
