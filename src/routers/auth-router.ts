@@ -11,6 +11,7 @@ import { usersRepository } from "../repositories/users-repository";
 import { CodeType } from "../models/code";
 import { createUserValidation } from "../middlewares/validations/users.validation";
 import { authService } from "../domain/auth-service";
+import { validateCode } from "../middlewares/validations/code.validation";
 
 
 export const authRouter = Router ({})
@@ -39,7 +40,7 @@ authRouter.get('/me', authMiddleware, async(req: RequestWithUser<UserViewModel>,
     }
 })
 //todo
-authRouter.post('/registration-confirmation', async(req: RequestWithBody<CodeType>, res: Response) => {
+authRouter.post('/registration-confirmation', validateCode, async(req: RequestWithBody<CodeType>, res: Response) => {
     const result = await authService.confirmEmail(req.body.code)
     if(result) {
         return res.sendStatus(sendStatus.NO_CONTENT_204)
