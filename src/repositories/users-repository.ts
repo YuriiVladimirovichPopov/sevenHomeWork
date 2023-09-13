@@ -15,6 +15,7 @@ export const usersRepository = {
             login: user.login,
             email: user.email,              // TODO fix it all
             createdAt: user.createdAt,
+            emailConfirmation: user.emailConfirmation
             //passwordHash: user.passwordHash,
             //passwordSalt: user.passwordSalt
             
@@ -33,8 +34,7 @@ export const usersRepository = {
         else if (pagination.searchLoginTerm) {
             filter = {login: { $regex: pagination.searchLoginTerm, $options: 'i'}}
         }
-         //filter = {email:...AND login:...}
-         //filter = {email:... OR login:...}
+
         const result: UsersMongoDbType[] =
         await usersCollection.find(filter, {projection: {passwordSalt: 0, passwordHash: 0}}) 
             
@@ -67,6 +67,11 @@ export const usersRepository = {
     
     async findByLoginOrEmail(loginOrEmail: string) {
         const user = await usersCollection.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
+        return user
+    },
+
+    async findUserByConfirmationCode(emailConfirmationCode: string) {
+        const user = await usersCollection.findOne({emailConfirmationCode: emailConfirmationCode})
         return user
     },
     

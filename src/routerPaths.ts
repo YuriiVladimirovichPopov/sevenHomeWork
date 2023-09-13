@@ -3,5 +3,6 @@ export const RouterPaths = {
     blogs: '/blogs',
     posts: '/posts',
     comments: '/comments',
+    emails: '/emails',
     __test__: '/testing'
 }

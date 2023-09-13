@@ -18,6 +18,7 @@ import { commentsQueryRepository } from "../query repozitory/queryCommentsReposi
 import { authMiddleware } from "../middlewares/validations/auth.validation";
 import { createPostValidationForComment } from '../middlewares/validations/comments.validation';
 import { postsRepository } from "../repositories/posts-repository";
+import { UserViewModel } from '../models/users/userViewModel';
 
 
 export const postsRouter = Router({})
@@ -107,10 +108,10 @@ async (req: Request<getByIdParam, PostsInputModel>, res: Response<PostsViewModel
 postsRouter.delete('/:id', 
   authorizationValidation,
   inputValidationErrors,
-async (req: RequestWithParams<getByIdParam>, res: Response) => {
+async (req: RequestWithParams<getByIdParam>, res: Response):Promise<any> => {
 const foundPost = await postsService.deletePost(req.params.id)
 if (!foundPost) {
   return res.sendStatus(sendStatus.NOT_FOUND_404);
   }
-res.sendStatus(sendStatus.NO_CONTENT_204)
+return res.sendStatus(sendStatus.NO_CONTENT_204)
 })

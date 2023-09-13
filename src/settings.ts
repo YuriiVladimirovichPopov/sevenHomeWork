@@ -6,6 +6,7 @@ import {testingRouter } from './routers/testing-router';
 import { usersRouter } from './routers/users-router';
 import { authRouter } from './routers/auth-router';
 import { commentsRouter } from './routers/comment-router';
+import { emailsRouter } from './routers/email-router';
 
 
 export const app = express()
@@ -28,5 +29,7 @@ app.use('/users', usersRouter)
 app.use('/auth', authRouter)
 
 app.use('/comments', commentsRouter)
+
+app.use('/emails', emailsRouter)
 
 app.use('/testing', testingRouter)

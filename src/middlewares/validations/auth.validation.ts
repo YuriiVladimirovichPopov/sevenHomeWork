@@ -33,7 +33,8 @@ const mappedUser: UserViewModel = {
     id: user._id.toString(),
     login: user.login,
     email: user.email,
-    createdAt: user.createdAt,  
+    createdAt: user.createdAt,
+    emailConfirmation: user.emailConfirmation  
 }
     req.user = mappedUser
     
@@ -41,27 +42,6 @@ const mappedUser: UserViewModel = {
     return;
     
 }
-
-
-
-/*
-const array1 = [1, 4, 9, 16];
-
-const map1 = array1.map((x) => x * 2);
-*/
-/*
-const user = _userMapper(user: UsersMongoDbType): UserViewModel {
-    return {
-    id: user._id.toString(),
-    login: user.login,
-    email: user.email,
-    createdAt: user.createdAt,
-    passwordHash: user.passwordHash,
-    passwordSalt: user.passwordSalt
-    }
-},
-
-*/
 
 
 

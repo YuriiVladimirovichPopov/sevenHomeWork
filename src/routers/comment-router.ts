@@ -3,7 +3,6 @@ import { authMiddleware } from "../middlewares/validations/auth.validation";
 import { commentsQueryRepository } from "../query repozitory/queryCommentsRepository";
 import { commentsRepository } from "../repositories/comments-repository";
 import { sendStatus } from './send-status';
-import { UserViewModel } from '../models/users/userViewModel';
 import { createPostValidationForComment } from "../middlewares/validations/comments.validation";
 
 
@@ -19,9 +18,8 @@ commentsRouter.get('/:commentId', async (req: Request, res: Response) => {/**/
     }
 })
 
-
 commentsRouter.put('/:commentId', authMiddleware, createPostValidationForComment, async (req: Request, res: Response) => {
-    const user = req.user!                    //res.json(req.user!)
+    const user = req.user!                    
     const commentId = req.params.commentId
     const existingComment = await commentsQueryRepository.findCommentById(commentId);
     if (!existingComment) {

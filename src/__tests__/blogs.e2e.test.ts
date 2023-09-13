@@ -34,12 +34,7 @@ describe('tests for /blogs', () => {
                 .expect(sendStatus.NOT_FOUND_404)
     })
 
-    it ("should get all posts fo specific blog", async () => { 
-        await getRequest()
-           .get(`${RouterPaths.posts}/:blogId/posts`)
-           //.send({postsCollection})
-           .expect(sendStatus.OK_200)
-   })
+    
 
     it ("shouldn't create a new blog without auth", async () => {
         await getRequest()
@@ -125,6 +120,15 @@ describe('tests for /blogs', () => {
         expect.setState({ blog2: createResponse.body})
     })
 
+    it ("should get all posts fo specific blog", async () => { 
+       
+        const {blog1} = expect.getState();
+
+        await getRequest()
+           .get(`${RouterPaths.blogs}/${blog1.id}/posts`)
+           .expect(sendStatus.OK_200, { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] })
+   })
+
     it ("shouldn't update a new blog with incorrect input data", async () => {
         const {blog1} = expect.getState()
 
@@ -142,7 +146,7 @@ describe('tests for /blogs', () => {
         ])}
 
         const updateRes1 = await getRequest()
-                .put(`${RouterPaths.blogs}/${blog1}`)   // be blog1.id
+                .put(`${RouterPaths.blogs}/${blog1.id}`)   // be blog1.id
                 .auth('admin', 'qwerty')
                 .send({})
 
@@ -151,7 +155,7 @@ describe('tests for /blogs', () => {
 
 
         const updateRes2 = await getRequest()
-                .put(`${RouterPaths.blogs}/${blog1}`)    // be blog1.id
+                .put(`${RouterPaths.blogs}/${blog1.id}`)    // be blog1.id
                 .auth('admin', 'qwerty')
                 .send(emptyData)
 
@@ -186,7 +190,7 @@ describe('tests for /blogs', () => {
         }
 
         await getRequest()
-                .put(`${RouterPaths.blogs}/${blog1.id}`)  //be blog1.id
+                .put(`${RouterPaths.blogs}/${blog1.id}`)  
                 .auth('admin', 'qwerty')
                 .send(inputModel)
                 .expect(sendStatus.NO_CONTENT_204)
@@ -210,7 +214,7 @@ describe('tests for /blogs', () => {
         const {blog1, blog2} = expect.getState()
 
         await getRequest()
-                .delete(`${RouterPaths.blogs}/${blog1}`)   // be blog1.id
+                .delete(`${RouterPaths.blogs}/${blog1.id}`)   // be blog1.id
                 .auth('admin', 'qwerty')
                 .expect(sendStatus.NO_CONTENT_204)
 
@@ -222,16 +226,17 @@ describe('tests for /blogs', () => {
                 .delete(`${RouterPaths.blogs}/${blog2.id}`)
                 .auth('admin', 'qwerty')
                 .expect(sendStatus.NO_CONTENT_204)
-        
+
         await getRequest()
                 .get(`${RouterPaths.blogs}/${blog2.id}`)
                 .expect(sendStatus.NOT_FOUND_404)
 
         await getRequest()
                 .get(RouterPaths.blogs)
-                .expect(sendStatus.OK_200, [])
-    })
+                .expect(sendStatus.OK_200, { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] })
+    }) 
 })
+
     
     
 

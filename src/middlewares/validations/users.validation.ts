@@ -6,7 +6,7 @@ const loginValidation = body('login')
                                             .isString()
                                             .isLength({min: 3, max: 10})
                                             .trim()
-                                            .matches(/^[a-zA-Z0-9_-]*$/)
+                                            //.matches(/^[a-zA-Z0-9_-]*$/)
                                             .withMessage('incorrect login')
 
 const passwordValidation = body('password')

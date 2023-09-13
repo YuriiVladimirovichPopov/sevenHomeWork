@@ -1,6 +1,6 @@
 import { Request } from "express"
 import { ObjectId } from 'mongodb';
-import { UserViewModel } from './models/users/userViewModel';
+import { EmailConfirmationType, UserViewModel } from './models/users/userViewModel';
 import { CommentViewModel } from './models/comments/commentViewModel';
 
 
@@ -30,6 +30,7 @@ import { CommentViewModel } from './models/comments/commentViewModel';
     createdAt: string,
     passwordHash: string
     passwordSalt: string
+    emailConfirmation: EmailConfirmationType
   }
 
   export type createPostDTOType = {         // DTO: data transfer object
@@ -52,6 +53,14 @@ import { CommentViewModel } from './models/comments/commentViewModel';
     createdAt: string
   }
 
-export type RequestWithParams<T> = Request<T,{},{},{user: UserViewModel}>
+  export type RegistrationDataType = {
+    ip: string
+  }
+
+//todo create UserAccountDBType
+
+
+
+export type RequestWithParams<T> = Request<T,{},{},{},{user: UserViewModel}>
 export type RequestWithBody<T> = Request<{}, {}, T>
 export type RequestWithUser<U extends UserViewModel> = Request<{}, {}, {}, {},  U>
