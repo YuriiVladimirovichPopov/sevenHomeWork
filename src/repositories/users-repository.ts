@@ -80,14 +80,7 @@ export const usersRepository = {
         return this._userMapper(newUser)
     },
 
-    async updateConfirmEmailByUser(id: string): Promise<boolean> {
-        if(!ObjectId.isValid(id)) {
-            return false
-        }
-        const _id = new ObjectId(id)
-        const foundUserById = await usersCollection.updateOne({_id}, {$set: {isConfirmEmail: true}})
-        return foundUserById.matchedCount === 1
-    },
+    
      
     async deleteUser(id: string): Promise<boolean> {
         if (!ObjectId.isValid(id)) {

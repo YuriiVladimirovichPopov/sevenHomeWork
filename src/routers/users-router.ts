@@ -9,6 +9,7 @@ import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 import { UserViewModel } from "../models/users/userViewModel";
 import { PaginatedUser } from "../models/users/paginatedQueryUser";
 import { createUserValidation } from "../middlewares/validations/users.validation";
+import { authService } from "../domain/auth-service";
 
 export const usersRouter = Router({})
 
@@ -24,7 +25,7 @@ usersRouter.post('/',
   ...createUserValidation,
   inputValidationErrors,
   async (req: Request, res: Response) => {
-  const newUser = await QueryUserRepository.createUser(
+  const newUser = await authService.createUser(
     req.body.login,
     req.body.email, 
     req.body.password 
