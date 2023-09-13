@@ -12,6 +12,7 @@ import { CodeType } from "../models/code";
 import { createUserValidation } from "../middlewares/validations/users.validation";
 import { authService } from "../domain/auth-service";
 import { validateCode } from "../middlewares/validations/code.validation";
+import { emailConfValidation } from "../middlewares/validations/emailConf.validation";
 
 
 export const authRouter = Router ({})
@@ -59,7 +60,7 @@ authRouter.post('/registration', createUserValidation, async(req: RequestWithBod
     }
 })
 //todo
-authRouter.post('/registration-email-resending', async(req: RequestWithBody<UserInputModel>, res: Response) => {
+authRouter.post('/registration-email-resending', emailConfValidation, async(req: RequestWithBody<UserInputModel>, res: Response) => {
     const user = await authService.updateConfirmEmailByUser(req.body.email)
     if (user) {
         return res.sendStatus(sendStatus.NO_CONTENT_204)
