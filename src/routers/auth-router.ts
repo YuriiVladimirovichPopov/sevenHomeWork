@@ -60,6 +60,9 @@ async(req: RequestWithBody<CodeType>, res: Response) => {
     if (user.emailConfirmation.expirationDate < currentDate ) {
         return res.status(sendStatus.BAD_REQUEST_400).send({info: "expirationDate" })
     }
+    if (user.emailConfirmation.confirmationCode !== req.body.code) {
+        return res.status(sendStatus.BAD_REQUEST_400).send({info: "confirmationCode" })
+    }
     await authService.updateConfirmEmailByUser(user._id.toString())
    
 
@@ -84,7 +87,10 @@ async(req: RequestWithBody<UsersMongoDbType>, res: Response) => {
     if(!user) {
         return res.sendStatus(sendStatus.BAD_REQUEST_400)
     }
-    console.log('r-e-r', user)
+    if (user.emailConfirmation.isConfirmed) {
+        return res.status(sendStatus.BAD_REQUEST_400).send({info: "isConfirmed" })
+    }
+
     await usersCollection.updateOne({_id: user!._id}, {$set: {
             emailConfirmation: {confirmationCode: randomUUID(),
                                 expirationDate: add(new Date(), {
