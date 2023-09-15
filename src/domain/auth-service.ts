@@ -41,8 +41,6 @@ export const authService = {
          console.log('sendEmail:', res)
         } catch {
             console.error('send email error:', error)
-            //await usersRepository.deleteUser(newUser._id.toString())
-            //return null
         }
         return createResult
     },
@@ -84,8 +82,8 @@ export const authService = {
         return hash
     },
 
-    async updateConfirmEmailByUser(email: string): Promise<boolean> {
-        const foundUserByEmail = await usersCollection.updateOne({email}, {$set: {isConfirmEmail: true}})
-        return foundUserByEmail.matchedCount === 1
+    async updateConfirmEmailByUser(userId: string): Promise<boolean> {    //email->code
+        const foundUserByEmail = await usersCollection.updateOne({_id: new ObjectId(userId)}, {$set: {isConfirmEmail: true}})
+        return foundUserByEmail.matchedCount === 1 // find by code
     },
 }

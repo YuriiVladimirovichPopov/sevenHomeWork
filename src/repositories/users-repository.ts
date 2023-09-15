@@ -69,6 +69,11 @@ export const usersRepository = {
         const user = await usersCollection.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]})
         return user
     },
+//new
+    async findUserByEmail(email: string) {
+        const user = await usersCollection.findOne({email: email})
+        return user
+    },
 
     async findUserByConfirmationCode(emailConfirmationCode: string) {
         const user = await usersCollection.findOne({emailConfirmationCode: emailConfirmationCode})
@@ -80,8 +85,6 @@ export const usersRepository = {
         return this._userMapper(newUser)
     },
 
-    
-     
     async deleteUser(id: string): Promise<boolean> {
         if (!ObjectId.isValid(id)) {
             return false

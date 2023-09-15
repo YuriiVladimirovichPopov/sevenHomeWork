@@ -1,8 +1,7 @@
 import { Response, Router } from "express";
-import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 import { sendStatus } from './send-status';
 import { LoginInputType } from '../models/users/loginInputModel';
-import { RequestWithBody, RequestWithUser } from '../types';
+import { RequestWithBody, RequestWithUser, UsersMongoDbType } from '../types';
 import { jwtService } from "../application/jwt-service";
 import { authMiddleware } from '../middlewares/validations/auth.validation';
 import { UserViewModel } from '../models/users/userViewModel';
@@ -13,6 +12,11 @@ import { createUserValidation } from "../middlewares/validations/users.validatio
 import { authService } from "../domain/auth-service";
 import { validateCode } from "../middlewares/validations/code.validation";
 import { emailConfValidation } from "../middlewares/validations/emailConf.validation";
+import { emailManager } from "../managers/email-manager";
+import { usersCollection } from "../db/db";
+import { randomUUID } from 'crypto';
+import { add } from "date-fns";
+import { error } from 'console';
 
 
 export const authRouter = Router ({})
@@ -40,18 +44,31 @@ authRouter.get('/me', authMiddleware, async(req: RequestWithUser<UserViewModel>,
         })
     }
 })
-//todo
-authRouter.post('/registration-confirmation', validateCode, async(req: RequestWithBody<CodeType>, res: Response) => {
-    //-> authService -> findUserByCode -> check is user confirmed (should be false) -> updateConfirmEmailByUser (make true)
-    const result = await authService.confirmEmail(req.body.code)
-    if(result) {
-        return res.sendStatus(sendStatus.NO_CONTENT_204)
-    } else {
+
+authRouter.post('/registration-confirmation', validateCode, 
+async(req: RequestWithBody<CodeType>, res: Response) => {
+    const currentDate = new Date()
+    //-> authService -> findUserByCode -> check is user confirmed (should be false) -> 
+    //updateConfirmEmailByUser (make true)
+    const user = await usersRepository.findUserByConfirmationCode(req.body.code)
+    console.log('registration-confirmation',     user)
+    if(!user) {
+        return res.sendStatus(sendStatus.BAD_REQUEST_400)
+    } 
+    if (user.emailConfirmation.isConfirmed) {
         return res.sendStatus(sendStatus.BAD_REQUEST_400)
     }
+    if (user.emailConfirmation.expirationDate < currentDate ) {
+        return res.sendStatus(sendStatus.BAD_REQUEST_400)
+    }
+    await authService.updateConfirmEmailByUser(user._id.toString())
+   
+
+        return res.sendStatus(sendStatus.NO_CONTENT_204)
 })
 
-authRouter.post('/registration', createUserValidation, async(req: RequestWithBody<UserInputModel>, res: Response) => {
+authRouter.post('/registration', createUserValidation, 
+async(req: RequestWithBody<UserInputModel>, res: Response) => {
     const user = await authService.createUser(req.body.login, req.body.email, req.body.password)
     
     if (user) {
@@ -60,13 +77,32 @@ authRouter.post('/registration', createUserValidation, async(req: RequestWithBod
         return res.sendStatus(sendStatus.BAD_REQUEST_400)
     }
 })
-//todo
-authRouter.post('/registration-email-resending', emailConfValidation, async(req: RequestWithBody<UserInputModel>, res: Response) => {
-    //->authService -> findUserByEmail -> create newConfirmationCode and newDate -> save newConfirmationCode and newDate -> sendEmail(user.email, newConfirmationCode)
-    const user = await authService.updateConfirmEmailByUser(req.body.email)
-    if (user) {
-        return res.sendStatus(sendStatus.NO_CONTENT_204)
-    } else {
+
+authRouter.post('/registration-email-resending', emailConfValidation, 
+async(req: RequestWithBody<UsersMongoDbType>, res: Response) => {
+    //->authService -> findUserByEmail -> create newConfirmationCode and newDate -> 
+    //save newConfirmationCode and newDate -> sendEmail(user.email, newConfirmationCode)
+    
+    let user = await usersRepository.findUserByEmail(req.body.email)
+    if(!user) {
         return res.sendStatus(sendStatus.BAD_REQUEST_400)
     }
+    console.log('r-e-r', user)
+    await usersCollection.updateOne({_id: user!._id}, {$set: {
+            emailConfirmation: {confirmationCode: randomUUID(),
+                                expirationDate: add(new Date(), {
+                                    minutes: 60
+                                }),
+                                isConfirmed: false}}});
+    
+    const updatedUser = await usersCollection.findOne({_id: user!._id})
+    
+    
+    try {
+        await emailManager.sendEmail(updatedUser)
+    } catch {
+        error("email is already confirmed", error)
+    }
+        return res.sendStatus(sendStatus.NO_CONTENT_204)
+    
 })

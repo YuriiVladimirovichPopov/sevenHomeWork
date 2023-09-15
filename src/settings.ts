@@ -2,7 +2,7 @@ import  express from 'express'
 import cors from 'cors'
 import { blogsRouter } from './routers/blogs-router';
 import { postsRouter } from './routers/posts-router';
-import {testingRouter } from './routers/testing-router';
+import { testingRouter } from './routers/testing-router';
 import { usersRouter } from './routers/users-router';
 import { authRouter } from './routers/auth-router';
 import { commentsRouter } from './routers/comment-router';
