@@ -10,6 +10,7 @@ import { emailManager } from "../managers/email-manager";
 import { settings } from "../settings";
 import  Jwt  from "jsonwebtoken";
 import { usersCollection } from "../db/db";
+import { randomUUID } from "crypto";
 
 
 export const authService = {
@@ -17,7 +18,7 @@ export const authService = {
     async createUser (login: string, email: string, password: string): Promise<UserViewModel | null> {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
-
+        
         const newUser: UsersMongoDbType = {
             _id: new ObjectId(),
             login,
@@ -26,9 +27,9 @@ export const authService = {
             passwordSalt,
             createdAt: new Date().toISOString(),
             emailConfirmation: {
-                confirmationCode: uuidv4(),
+                confirmationCode: randomUUID(),
                 expirationDate: add(new Date(), {
-                    minutes: 5
+                    minutes: 60
                 }),
                 isConfirmed: false
             }

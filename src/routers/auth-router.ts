@@ -48,18 +48,17 @@ authRouter.get('/me', authMiddleware, async(req: RequestWithUser<UserViewModel>,
 authRouter.post('/registration-confirmation', validateCode, 
 async(req: RequestWithBody<CodeType>, res: Response) => {
     const currentDate = new Date()
-    //-> authService -> findUserByCode -> check is user confirmed (should be false) -> 
-    //updateConfirmEmailByUser (make true)
+    
     const user = await usersRepository.findUserByConfirmationCode(req.body.code)
-    console.log('registration-confirmation',     user)
+    console.log('registration-confirmation', user)
     if(!user) {
-        return res.sendStatus(sendStatus.BAD_REQUEST_400)
+        return res.status(sendStatus.BAD_REQUEST_400).send({info: "user" })
     } 
     if (user.emailConfirmation.isConfirmed) {
-        return res.sendStatus(sendStatus.BAD_REQUEST_400)
+        return res.status(sendStatus.BAD_REQUEST_400).send({info: "isConfirmed" })
     }
     if (user.emailConfirmation.expirationDate < currentDate ) {
-        return res.sendStatus(sendStatus.BAD_REQUEST_400)
+        return res.status(sendStatus.BAD_REQUEST_400).send({info: "expirationDate" })
     }
     await authService.updateConfirmEmailByUser(user._id.toString())
    
@@ -80,10 +79,8 @@ async(req: RequestWithBody<UserInputModel>, res: Response) => {
 
 authRouter.post('/registration-email-resending', emailConfValidation, 
 async(req: RequestWithBody<UsersMongoDbType>, res: Response) => {
-    //->authService -> findUserByEmail -> create newConfirmationCode and newDate -> 
-    //save newConfirmationCode and newDate -> sendEmail(user.email, newConfirmationCode)
     
-    let user = await usersRepository.findUserByEmail(req.body.email)
+    const user = await usersRepository.findUserByEmail(req.body.email)
     if(!user) {
         return res.sendStatus(sendStatus.BAD_REQUEST_400)
     }

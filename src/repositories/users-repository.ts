@@ -76,7 +76,8 @@ export const usersRepository = {
     },
 
     async findUserByConfirmationCode(emailConfirmationCode: string) {
-        const user = await usersCollection.findOne({emailConfirmationCode: emailConfirmationCode})
+        //const user = await usersCollection.findOne({})
+        const user = await usersCollection.findOne({"emailConfirmation.confirmationCode": emailConfirmationCode})
         return user
     },
     
