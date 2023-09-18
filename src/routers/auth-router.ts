@@ -52,16 +52,16 @@ async(req: RequestWithBody<CodeType>, res: Response) => {
     const user = await usersRepository.findUserByConfirmationCode(req.body.code)
     
     if(!user) {
-        return res.status(sendStatus.BAD_REQUEST_400).send({info: "user" })
+        return res.status(sendStatus.BAD_REQUEST_400).send({ errorsMessages: [{ message: 'User not found by this code', field: "code" }] })
     } 
     if (user.emailConfirmation.isConfirmed) {
-        return res.status(sendStatus.BAD_REQUEST_400).send({info: "isConfirmed" })
+        return res.status(sendStatus.BAD_REQUEST_400).send({ errorsMessages: [{ message: 'Email is confirmed', field: "code" }] })
     }
     if (user.emailConfirmation.expirationDate < currentDate ) {
-        return res.status(sendStatus.BAD_REQUEST_400).send({info: "expirationDate" })
+        return res.status(sendStatus.BAD_REQUEST_400).send({ errorsMessages: [{ message: 'The code is exparied', field: "code" }] })
     }
     if (user.emailConfirmation.confirmationCode !== req.body.code) {   // '!=='
-        return res.status(sendStatus.BAD_REQUEST_400).send({info: "confirmationCode" })
+        return res.status(sendStatus.BAD_REQUEST_400).send({ errorsMessages: [{ message: 'Invalid code', field: "code" }] })
     }
     console.log('registration-confirmation', user)
     await authService.updateConfirmEmailByUser(user._id.toString())
