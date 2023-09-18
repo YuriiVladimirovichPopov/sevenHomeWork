@@ -2,8 +2,9 @@ import { body } from "express-validator"
 import { inputValidationErrors } from "../input-validation-middleware"; 
 import { usersRepository } from "../../repositories/users-repository";
 
-    const emailConfirmationValidation = body('email').isString()
-                                                    .trim()
+    const emailConfirmationValidation = body('email')
+    .isString()
+       .trim()
                                                     .isEmail()
                                                     .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
                                                     .withMessage('incorrect email')

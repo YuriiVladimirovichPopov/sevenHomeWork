@@ -47,7 +47,7 @@ export const authService = {
     },
     async checkCredentials (loginOrEmail: string, password: string) {
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
-        
+
         if (!user) return false
         if (!user.emailConfirmation.isConfirmed) return null
         
@@ -85,7 +85,7 @@ export const authService = {
     },
 
     async updateConfirmEmailByUser(userId: string): Promise<boolean> {    //email->code
-        const foundUserByEmail = await usersCollection.updateOne({_id: new ObjectId(userId)}, {$set: {isConfirmEmail: true}})
+        const foundUserByEmail = await usersCollection.updateOne({_id: new ObjectId(userId)}, {$set: {"emailConfirmation.isConfirmed": true}})
         return foundUserByEmail.matchedCount === 1 // find by code
     },
 }
