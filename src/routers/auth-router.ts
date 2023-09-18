@@ -50,7 +50,7 @@ async(req: RequestWithBody<CodeType>, res: Response) => {
     const currentDate = new Date()
     
     const user = await usersRepository.findUserByConfirmationCode(req.body.code)
-    console.log('registration-confirmation', user)
+    
     if(!user) {
         return res.status(sendStatus.BAD_REQUEST_400).send({info: "user" })
     } 
@@ -60,9 +60,10 @@ async(req: RequestWithBody<CodeType>, res: Response) => {
     if (user.emailConfirmation.expirationDate < currentDate ) {
         return res.status(sendStatus.BAD_REQUEST_400).send({info: "expirationDate" })
     }
-    if (user.emailConfirmation.confirmationCode !== req.body.code) {
+    if (user.emailConfirmation.confirmationCode === req.body.code) {   // '!=='
         return res.status(sendStatus.BAD_REQUEST_400).send({info: "confirmationCode" })
     }
+    console.log('registration-confirmation', user)
     await authService.updateConfirmEmailByUser(user._id.toString())
    
 
@@ -87,6 +88,7 @@ async(req: RequestWithBody<UsersMongoDbType>, res: Response) => {
     if(!user) {
         return res.sendStatus(sendStatus.BAD_REQUEST_400)
     }
+    console.log('registration email resending', user)
     if (user.emailConfirmation.isConfirmed) {
         return res.status(sendStatus.BAD_REQUEST_400).send({info: "isConfirmed" })
     }
