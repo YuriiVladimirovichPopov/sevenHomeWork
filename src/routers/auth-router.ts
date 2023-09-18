@@ -60,7 +60,7 @@ async(req: RequestWithBody<CodeType>, res: Response) => {
     if (user.emailConfirmation.expirationDate < currentDate ) {
         return res.status(sendStatus.BAD_REQUEST_400).send({info: "expirationDate" })
     }
-    if (user.emailConfirmation.confirmationCode === req.body.code) {   // '!=='
+    if (user.emailConfirmation.confirmationCode !== req.body.code) {   // '!=='
         return res.status(sendStatus.BAD_REQUEST_400).send({info: "confirmationCode" })
     }
     console.log('registration-confirmation', user)
