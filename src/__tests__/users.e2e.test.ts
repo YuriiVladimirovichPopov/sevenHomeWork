@@ -45,7 +45,12 @@ describe('tests for /users', () => {
             id: '',
             login: '',
             email: '',
-            createdAt: ''
+            createdAt: '',
+            emailConfirmation: {
+                isConfirmed: false,
+                confirmationCode: " ",
+                expirationDate: new Date()
+            }
         }
             
         await getRequest()
@@ -77,6 +82,11 @@ describe('tests for /users', () => {
             login: inputModel.login,
             email: inputModel.email,
             createdAt: expect.any(String),
+            emailConfirmation:  {
+                confirmationCode: expect.any(String),
+                expirationDate: expect.any(String),
+                isConfirmed: false
+            }
         })
 
         expect(createResponse.status).toBe(sendStatus.CREATED_201)

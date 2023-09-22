@@ -96,7 +96,7 @@ postsRouter.put('/:id',
   updatePostValidation,
 async (req: Request<getByIdParam, PostsInputModel>, res: Response<PostsViewModel>) => {
   const updatePost =  await postsService.updatePost(req.params.id, req.body)
-
+console.log("update", updatePost)
     if (!updatePost) {
       return res.sendStatus(sendStatus.NOT_FOUND_404)
     } else {

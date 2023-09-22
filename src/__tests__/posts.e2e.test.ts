@@ -3,24 +3,38 @@ import { app } from '../settings';
 import { authorizationValidation } from "../middlewares/input-validation-middleware";
 import { sendStatus } from "../routers/send-status";
 import { PostsViewModel } from "../models/posts/postsViewModel";
-import { BlogViewModel } from "../models/blogs/blogsViewModel";
-import { randomUUID } from 'crypto';
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { RouterPaths } from "../routerPaths";
+import { MongoClient } from 'mongodb';
+import { BlogInputModel } from "../models/blogs/blogsInputModel";
 
 
 const getRequest = () => {
     return request(app)
 }
+
+let connection: any; 
+let db;
+
 describe('tests for /posts', () => {
     beforeAll(async () => {
+        connection = await MongoClient.connect(process.env.mongoUrl!, {
+            //@ts-ignore
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+          });
+          db = await connection.db();
         await getRequest()
         .delete('/all-data')
         .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+
     })
       
     beforeAll(async () => {
         authorizationValidation 
+    })
+    afterAll(async () => {
+        await connection.close()
     })
     
     it("should return 200 and post", async () => {
@@ -51,35 +65,34 @@ describe('tests for /posts', () => {
                 .expect(sendStatus.UNAUTHORIZED_401)
     })
 
-    it ("should create a new post with correct input data", async () => {
-        const blog: BlogViewModel = {
-            id: randomUUID(),
+    it ("should create a new post with correct input data", async () => {            
+        const blog: BlogInputModel = {
             name: 'newName',
             description: 'blablabla1',
             websiteUrl: 'it-incubator.com',
-            createdAt: new Date().toISOString(),
-            isMembership: false
         }
         const createResponse = await getRequest()
                 .post('/blogs')
                 .auth('admin', 'qwerty')
                 .send(blog)           
                 .expect(sendStatus.CREATED_201)
+
         
-        const data: PostsViewModel = {
-            id: '34456',
+        const createdPost: PostsInputModel = {
             title: 'new blog',
             shortDescription: 'blabla',
             content: 'i love you',
             blogId: createResponse.body.id,
-            blogName: 'newName',
-            createdAt: '30.06.13', 
         }
-         await getRequest()
+         const resPost = await getRequest()
                 .post('/posts')
                 .auth('admin', 'qwerty')
-                .send(data)
+                .send(createdPost)
                 .expect(sendStatus.CREATED_201)
+ 
+        expect.setState({ post1: resPost.body,
+        blog1: createResponse.body})
+        
     })
 
     it ("shouldn't update post with incorrent input data" , async () => {
@@ -121,13 +134,13 @@ describe('tests for /posts', () => {
     })
 
     it ("should update post with corrent input data" , async () => {
-        const {post1} = expect.getState()
+        const {post1, blog1} = expect.getState()
 
         const inputModel: PostsInputModel = {
-            title: 'updated post title',
+            title: 'updated title',
             shortDescription: 'updated shortDescription',
             content: 'updated content',
-            blogId: '999999999999999999999999'
+            blogId: blog1.id
         }
 
         await getRequest()
@@ -142,10 +155,13 @@ describe('tests for /posts', () => {
         expect(updatedPost.status).toBe(sendStatus.OK_200)
         expect(updatedPost.body).not.toBe(post1)
         expect(updatedPost.body).toEqual({
+            id: post1.id,
             title: inputModel.title,
             shortDescription: inputModel.shortDescription,
             content: inputModel.content,
-            blogId: inputModel.blogId,
+            blogId: blog1.id,
+            blogName: post1.blogName,
+            createdAt: post1.createdAt
         })
     })
 
@@ -162,7 +178,7 @@ describe('tests for /posts', () => {
                 .expect(sendStatus.NOT_FOUND_404)
 
         await getRequest()
-                .get(RouterPaths.blogs)
+                .get(RouterPaths.posts)
                 .expect(sendStatus.OK_200, { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] })        
 
     })

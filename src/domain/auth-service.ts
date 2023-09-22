@@ -4,7 +4,6 @@ import  bcrypt  from "bcrypt";
 import { ObjectId } from "mongodb";
 import {UsersMongoDbType } from "../types";
 import { error } from "console";
-import { v4 as uuidv4 } from "uuid";
 import add from "date-fns/add"
 import { emailManager } from "../managers/email-manager";
 import { settings } from "../settings";
@@ -49,7 +48,6 @@ export const authService = {
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
 
         if (!user) return false
-        //if (!user.emailConfirmation.isConfirmed) return null
         
         const passwordHash = await this._generateHash(password, user.passwordSalt)
         if (user.passwordHash !== passwordHash) {
@@ -84,8 +82,8 @@ export const authService = {
         return hash
     },
 
-    async updateConfirmEmailByUser(userId: string): Promise<boolean> {    //email->code
+    async updateConfirmEmailByUser(userId: string): Promise<boolean> {    
         const foundUserByEmail = await usersCollection.updateOne({_id: new ObjectId(userId)}, {$set: {"emailConfirmation.isConfirmed": true}})
-        return foundUserByEmail.matchedCount === 1 // find by code
+        return foundUserByEmail.matchedCount === 1 
     },
 }

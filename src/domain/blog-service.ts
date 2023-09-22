@@ -10,12 +10,10 @@ import { PaginatedType } from "../routers/helpers/pagination";
 export const blogService = {
     
     async findAllBlogs(pagination: PaginatedType): Promise<PaginatedBlog<BlogViewModel[]>> {     //tyt nado dobavit functions
-        
         return await blogsRepository.findAllBlogs(pagination)
     },
 
     async findBlogById(id: string):Promise<BlogViewModel | null> {
-        
         return await blogsRepository.findBlogById(id)
     },    
     
@@ -29,22 +27,18 @@ export const blogService = {
         }
 
         const createdBlog = await blogsRepository.createBlog(newBlog)
-
         return createdBlog
     },
 
     async updateBlog(id: string, data: BlogInputModel ): Promise<boolean> {
-
         return await blogsRepository.updateBlog(id, {...data})
     },
     
     async deleteBlog(id: string): Promise<boolean> {
-
         return await blogsRepository.deleteBlog(id)
     }, 
     
     async deleteAllBlogs(): Promise<boolean> {
-
         return await blogsRepository.deleteAllBlogs() 
     }
 }

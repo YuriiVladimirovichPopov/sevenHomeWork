@@ -102,8 +102,6 @@ describe('tests for /blogs', () => {
         expect(getByIdRes.status).toBe(sendStatus.OK_200)
         expect(getByIdRes.body).toEqual(createdBlog)
         
-        
-
         createdBlog1 = createdBlog
         expect.setState({ blog1: createdBlog})
     })
@@ -214,7 +212,7 @@ describe('tests for /blogs', () => {
         const {blog1, blog2} = expect.getState()
 
         await getRequest()
-                .delete(`${RouterPaths.blogs}/${blog1.id}`)   // be blog1.id
+                .delete(`${RouterPaths.blogs}/${blog1.id}`) 
                 .auth('admin', 'qwerty')
                 .expect(sendStatus.NO_CONTENT_204)
 
